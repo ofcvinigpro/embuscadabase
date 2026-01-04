@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Brainrot Checker</title>
+
+<style>
+body {
+    background: #0d0d0d;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.box {
+    background: #1a1a1a;
+    padding: 20px;
+    border-radius: 10px;
+    width: 360px;
+}
+
+input, button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 8px;
+    border-radius: 6px;
+    border: none;
+}
+
+button {
+    background: #ff0066;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.result {
+    margin-top: 12px;
+    text-align: center;
+    font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+    <h2>Em Busca Da Base Cursed</h2>
+    <input id="search" placeholder="Nome do brainrot">
+    <button onclick="check()">Pesquisar</button>
+    <div class="result" id="result">Carregando listas...</div>
+</div>
+
+<script>
+const categories = {
+    comum: "Comum",
+    raro: "Raro",
+    epico: "Épico",
+    mitico: "Mítico",
+    lendario: "Lendário",
+    god: "God",
+    secreto: "Secreto"
+};
+
+let brainrots = {};
+
+async function loadAll() {
+    for (const key in categories) {
+        try {
+            const res = await fetch(`data/${key}.txt`);
+            const text = await res.text();
+
+            text.split("\n").forEach(line => {
+                const name = line.trim().toLowerCase();
+                if (name) {
+                    brainrots[name] = categories[key];
+                }
+            });
+        } catch (e) {
+            console.error("Erro ao carregar", key);
+        }
+    }
+    document.getElementById("result").innerText = "Pronto para pesquisar.";
+}
+
+function check() {
+    const name = document.getElementById("search").value.trim().toLowerCase();
+    const result = document.getElementById("result");
+
+    if (!name) {
+        result.innerText = "Digite um nome válido.";
+        return;
+    }
+
+    if (brainrots[name]) {
+        result.innerText = `✅ Ja temos esse (${brainrots[name]}).`;
+    } else {
+        result.innerText = "❌ Não temos esse tu achou ja?.";
+    }
+}
+
+loadAll();
+</script>
+
+</body>
+</html>
