@@ -247,7 +247,7 @@ function updateProgress() {
 
 input.addEventListener("input", () => {
     const value = input.value.trim().toLowerCase();
-    suggestionsBox.innerHTML("");
+    suggestionsBox.innerHTML = "";
 
     if (value.length < 2) return;
 
