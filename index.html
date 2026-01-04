@@ -19,6 +19,12 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
+
+    transition: background 0.3s ease;
+}
+
+body.dark {
+    background: #000;
 }
 
 .box {
@@ -28,6 +34,25 @@ body {
     border-radius: 12px;
     width: 380px;
     box-shadow: 0 0 25px rgba(0,0,0,0.8);
+    position: relative;
+}
+
+.theme-toggle {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #111;
+    border: none;
+    color: #fff;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.theme-toggle:hover {
+    background: #222;
 }
 
 h2 {
@@ -143,12 +168,14 @@ button:hover {
 <body>
 
 <div class="box">
+    <!-- BOTÃO LUA -->
+    <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+
     <h2>Em Busca Da Base Cursed</h2>
     <div class="subtitle">Lista oficial • somente visualização</div>
 
     <div class="stats" id="stats">Carregando contadores...</div>
 
-    <!-- PROGRESSO -->
     <div class="progress-box">
         <div class="progress-text" id="progressText">Total: 0 / 239</div>
         <div class="progress-bar">
@@ -292,6 +319,10 @@ function check() {
     } else {
         result.innerText = "❌ Não temos esse. Tu achou já?";
     }
+}
+
+function toggleTheme() {
+    document.body.classList.toggle("dark");
 }
 
 loadAll();
