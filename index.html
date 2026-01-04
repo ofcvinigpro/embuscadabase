@@ -22,17 +22,31 @@ body {
 }
 
 .box {
-    background: rgba(0, 0, 0, 0.75);
+    background: rgba(0, 0, 0, 0.78);
     backdrop-filter: blur(4px);
     padding: 20px;
     border-radius: 12px;
-    width: 360px;
+    width: 380px;
     box-shadow: 0 0 25px rgba(0,0,0,0.8);
 }
 
 h2 {
     text-align: center;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    text-align: center;
+    font-size: 12px;
+    opacity: 0.7;
     margin-bottom: 10px;
+}
+
+.stats {
+    font-size: 11px;
+    text-align: center;
+    margin-bottom: 10px;
+    line-height: 1.4;
 }
 
 input, button {
@@ -42,10 +56,6 @@ input, button {
     border-radius: 6px;
     border: none;
     font-size: 14px;
-}
-
-input {
-    outline: none;
 }
 
 button {
@@ -78,10 +88,26 @@ button:hover {
     padding: 8px;
     cursor: pointer;
     border-bottom: 1px solid #222;
+    font-size: 13px;
+}
+
+.suggestion span {
+    opacity: 0.7;
+    font-size: 11px;
 }
 
 .suggestion:hover {
     background: #333;
+}
+
+.tag-god { color: #ff4444; }
+.tag-secreto { color: #ffcc00; }
+
+.footer {
+    text-align: center;
+    font-size: 11px;
+    opacity: 0.6;
+    margin-top: 12px;
 }
 </style>
 </head>
@@ -90,6 +116,9 @@ button:hover {
 
 <div class="box">
     <h2>Em Busca Da Base Cursed</h2>
+    <div class="subtitle">Lista oficial • somente visualização</div>
+
+    <div class="stats" id="stats">Carregando contadores...</div>
 
     <input id="search" placeholder="Nome do brainrot" autocomplete="off">
     <div id="suggestions"></div>
@@ -97,6 +126,11 @@ button:hover {
     <button onclick="check()">Pesquisar</button>
 
     <div class="result" id="result">Carregando listas...</div>
+
+    <div class="footer">
+        Última atualização: <b>03/01/2026</b><br>
+        Criado por <b>by@igvinipro</b>
+    </div>
 </div>
 
 <script>
@@ -111,6 +145,15 @@ const categories = {
 };
 
 let brainrots = {};
+let counters = {
+    Comum: 0,
+    Raro: 0,
+    Épico: 0,
+    Mítico: 0,
+    Lendário: 0,
+    God: 0,
+    Secreto: 0
+};
 
 const input = document.getElementById("search");
 const suggestionsBox = document.getElementById("suggestions");
@@ -124,14 +167,24 @@ async function loadAll() {
             text.split("\n").forEach(line => {
                 const name = line.trim().toLowerCase();
                 if (name) {
-                    brainrots[name] = categories[key];
+                    const cat = categories[key];
+                    brainrots[name] = cat;
+                    counters[cat]++;
                 }
             });
-        } catch (e) {
-            console.error("Erro ao carregar", key);
-        }
+        } catch {}
     }
+
     document.getElementById("result").innerText = "Pronto para pesquisar.";
+    updateStats();
+}
+
+function updateStats() {
+    document.getElementById("stats").innerHTML =
+        `Comum: ${counters.Comum} | Raro: ${counters.Raro} | Épico: ${counters.Épico}<br>
+         Mítico: ${counters.Mítico} | Lendário: ${counters.Lendário}<br>
+         <span class="tag-god">God: ${counters.God}</span> |
+         <span class="tag-secreto">Secreto: ${counters.Secreto}</span>`;
 }
 
 input.addEventListener("input", () => {
@@ -144,9 +197,15 @@ input.addEventListener("input", () => {
 
     for (const name in brainrots) {
         if (name.startsWith(value)) {
+            const cat = brainrots[name];
             const div = document.createElement("div");
             div.className = "suggestion";
-            div.innerText = name;
+
+            let tagClass = "";
+            if (cat === "God") tagClass = "tag-god";
+            if (cat === "Secreto") tagClass = "tag-secreto";
+
+            div.innerHTML = `${name} <span class="${tagClass}">• ${cat}</span>`;
 
             div.onclick = () => {
                 input.value = name;
@@ -156,7 +215,6 @@ input.addEventListener("input", () => {
             suggestionsBox.appendChild(div);
             shown++;
         }
-
         if (shown >= 5) break;
     }
 });
