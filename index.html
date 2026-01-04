@@ -42,6 +42,25 @@ button {
     text-align: center;
     font-weight: bold;
 }
+
+/* AUTOCOMPLETE */
+#suggestions {
+    background: #111;
+    border-radius: 6px;
+    margin-top: 5px;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.suggestion {
+    padding: 8px;
+    cursor: pointer;
+    border-bottom: 1px solid #222;
+}
+
+.suggestion:hover {
+    background: #333;
+}
 </style>
 </head>
 
@@ -49,8 +68,12 @@ button {
 
 <div class="box">
     <h2>Em Busca Da Base Cursed</h2>
-    <input id="search" placeholder="Nome do brainrot">
+
+    <input id="search" placeholder="Nome do brainrot" autocomplete="off">
+    <div id="suggestions"></div>
+
     <button onclick="check()">Pesquisar</button>
+
     <div class="result" id="result">Carregando listas...</div>
 </div>
 
@@ -66,6 +89,9 @@ const categories = {
 };
 
 let brainrots = {};
+
+const input = document.getElementById("search");
+const suggestionsBox = document.getElementById("suggestions");
 
 async function loadAll() {
     for (const key in categories) {
@@ -86,9 +112,37 @@ async function loadAll() {
     document.getElementById("result").innerText = "Pronto para pesquisar.";
 }
 
+input.addEventListener("input", () => {
+    const value = input.value.trim().toLowerCase();
+    suggestionsBox.innerHTML = "";
+
+    if (value.length < 2) return;
+
+    let shown = 0;
+
+    for (const name in brainrots) {
+        if (name.startsWith(value)) {
+            const div = document.createElement("div");
+            div.className = "suggestion";
+            div.innerText = name;
+
+            div.onclick = () => {
+                input.value = name;
+                suggestionsBox.innerHTML = "";
+            };
+
+            suggestionsBox.appendChild(div);
+            shown++;
+        }
+
+        if (shown >= 5) break;
+    }
+});
+
 function check() {
-    const name = document.getElementById("search").value.trim().toLowerCase();
+    const name = input.value.trim().toLowerCase();
     const result = document.getElementById("result");
+    suggestionsBox.innerHTML = "";
 
     if (!name) {
         result.innerText = "Digite um nome válido.";
@@ -96,9 +150,9 @@ function check() {
     }
 
     if (brainrots[name]) {
-        result.innerText = `✅ Ja temos esse (${brainrots[name]}).`;
+        result.innerText = `✅ Já temos esse (${brainrots[name]}).`;
     } else {
-        result.innerText = "❌ Não temos esse tu achou ja?.";
+        result.innerText = "❌ Não temos esse. Tu achou já?";
     }
 }
 
